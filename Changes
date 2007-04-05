@@ -1,0 +1,4 @@
+Revision history for Perl extension Form::Processor::Model::CDBI.
+
+0.03  Tue Apr  3 13:57:44 2007
+        Moved to separate package
