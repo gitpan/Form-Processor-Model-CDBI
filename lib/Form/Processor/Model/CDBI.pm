@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 use base 'Form::Processor';
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 NAME
 
@@ -192,7 +192,7 @@ sub guess_field_type {
 =item lookup_options
 
 Returns a array reference of key/value pairs for the column passed in.
-Calls $self->label_column( $name ) to get the column name to use as the label.
+Calls $field->label_column to get the column name to use as the label.
 The default is "name".  The labels are sorted by Perl's cmp sort.
 
 If there is an "active" column then only active are included, with the exception
@@ -200,6 +200,16 @@ being if the form (item) has currently selected the inactive item.  This allows
 existing records that reference inactive items to still have those as valid select
 options.  The inactive labels are formatted with brackets to indicate in the select
 list that they are inactive.
+
+The active column name is determined by calling:
+
+    $active_col = $form->can( 'active_column' )
+        ? $form->active_column
+        : $field->active_column;
+
+Which allows setting the name of the active column globally if
+your tables are consistantly named (all lookup tables have the same
+column name to indicate they are active), or on a per-field basis.
 
 In addition, if the foreign class is the same as the item's class (or the class returned
 by object_class) then options pointing to item are excluded.  The reason for this is
@@ -228,8 +238,10 @@ sub lookup_options {
     return unless $f_class->find_column($label_column);
 
 
+    my $active_col = $self->can( 'active_column' )
+        ? $self->active_column
+        : $field->active_column;
 
-    my $active_col = $field->active_column;
     $active_col = '' unless $f_class->find_column( $active_col );
 
     my $sort_col = $field->sort_order;

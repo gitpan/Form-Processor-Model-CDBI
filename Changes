@@ -1,4 +1,8 @@
 Revision history for Perl extension Form::Processor::Model::CDBI.
 
+0.04 Sun Jun  3 15:52:15 UTC 2007
+    Allows a global active_column method in the form
+    class to set the column to check in lookup tables.
+
 0.03  Tue Apr  3 13:57:44 2007
-        Moved to separate package
+    Moved to separate package
