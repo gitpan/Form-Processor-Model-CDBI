@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 use base 'Form::Processor';
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -332,18 +332,30 @@ sub init_value {
 
 =item update_from_form
 
-Update or create the object.
+    my $ok = $form->update_from_form( $parameter_hash );
 
-The update/create is done inside a transaction if do_transaction is available.
+Update or create the object from values in the form.
 
 Any field names that are related to the class by "has_many" and have a mapping
 table will be updated.  Validation is run unless validation has already been
 run.  ($form->clear might need to be called if the $form object stays in memory
 between requests.)
 
+The update/create is done inside a transaction if the method
+C<do_transaction()> is available.  It's recommended that your CDBI model class
+supplies that method.
 
+The actual update is done in the C<update_model> method.  Your form class can
+override that method (but don't forget to call SUPER!) if you wish to do additional
+database inserts or updates.  This is useful when a single form updates multiple tables.
+(If you are doing much of that review your schema design....).  If anything goes wrong
+in the update make sure you C<die>.  Assuming you have a standard C<do_transaction()>
+method this will call a rollback.  You should no use C<do_transaction()> in your overridden
+method unless is supports nested calls or you are not calling SUPER.
 
-Pass in params.  Returns true (the item) if ok.
+Pass in hash reference of parameters.
+
+Returns false if form does not validate.  Very likely dies on database errors.
 
 =cut
 
@@ -357,11 +369,13 @@ sub  update_from_form {
     # Should this be wrapped in an eval?  If so then should
     # call $item->discard_changes (when updating)
     if ( $self->object_class->can('do_transaction') ) {
-        $self->object_class->do_transaction( \&_do_update, $self );
+        $self->object_class->do_transaction( sub { $self->update_model } );
 
     } else {
-        $self->_do_update;
+        $self->update_mode;
     }
+
+    return 1;
 }
 
 =item model_validate
@@ -423,7 +437,7 @@ sub validate_unique {
 
 
 
-sub _do_update {
+sub update_model {
     my ( $self ) = @_;
 
 
@@ -449,7 +463,8 @@ sub _do_update {
 
         my $field = delete $fields{$col};
 
-        my $value = $field->value;
+        # If the field is flagged "clear" then set to NULL.
+        my $value = $field->clear ? undef : $field->value;
 
 
         if ( $item ) {
@@ -588,6 +603,9 @@ Bill Moseley
 This library is free software, you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
+=head1 SEE ALSO
+
+L<Form::Processor>
 
 
 =cut

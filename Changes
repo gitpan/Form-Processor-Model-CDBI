@@ -1,5 +1,13 @@
 Revision history for Perl extension Form::Processor::Model::CDBI.
 
+0.05 Thu Jun 21 04:39:44 UTC 2007
+    Add "clear" attribute to fields which the Model uses
+    to set columns null.  Useful for the odd case of a
+    row that holds fields dependent on other fields
+    (e.g. a form that changes based on selected form elements)
+
+
+
 0.04 Sun Jun  3 15:52:15 UTC 2007
     Allows a global active_column method in the form
     class to set the column to check in lookup tables.
