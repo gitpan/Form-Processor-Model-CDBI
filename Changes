@@ -1,5 +1,10 @@
 Revision history for Perl extension Form::Processor::Model::CDBI.
 
+0.06 Wed Jul 25 06:41:01 UTC 2007
+    Fixed typo when calling update_model and
+    no do_transaction exists.  Closes #28464
+    as reported by Yann Kerhervé. 
+
 0.05 Thu Jun 21 04:39:44 UTC 2007
     Add "clear" attribute to fields which the Model uses
     to set columns null.  Useful for the odd case of a

@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 use base 'Form::Processor';
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 
@@ -94,6 +94,9 @@ This is called first time $form->item is called.
 It calls basically does:
 
     return $self->object_class->retrieve( $self->item_id );
+
+But also validates that the item id matches /^\d+$/.  Override this method
+in your form class (or form base class) if your ids do not match that pattern.
 
 =cut
 
@@ -372,7 +375,7 @@ sub  update_from_form {
         $self->object_class->do_transaction( sub { $self->update_model } );
 
     } else {
-        $self->update_mode;
+        $self->update_model;
     }
 
     return 1;
