@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 use base 'Form::Processor';
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 NAME
 
