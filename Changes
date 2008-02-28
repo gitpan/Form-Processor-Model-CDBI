@@ -1,5 +1,11 @@
 Revision history for Perl extension Form::Processor::Model::CDBI.
 
+0.09 Thu Feb 28 04:23:29 UTC 2008
+    Look for a method "active_column" in the object's class
+    that returns the name of the boolean column to see if the
+    row is considered "active".  This column determines if
+    the row is included in the options list.
+
 0.08 Thu Feb 28 02:07:40 UTC 2008
     Allow primary keys (ids) of zero.  Not sure I like this
     change as zero primary keys are perfectly valid but tend

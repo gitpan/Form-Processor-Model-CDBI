@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 use base 'Form::Processor';
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -210,16 +210,29 @@ The active column name is determined by calling:
 
     $active_col = $form->can( 'active_column' )
         ? $form->active_column
-        : $field->active_column;
+        : $class->can( 'active_column' )
+            ? $class->active_column
+            : $field->active_column;
 
-Which allows setting the name of the active column globally if
-your tables are consistently named (all lookup tables have the same
+Which allows setting the name of the active column globally for a given
+form if your tables are consistently named (all lookup tables have the same
 column name to indicate they are active), or on a per-field basis.
 
-In addition, if the foreign class is the same as the item's class (or the class returned
-by object_class) then options pointing to item are excluded.  The reason for this is
-for a table column that points to the same table (self referenced), such as a "parent"
-column.  The assumption is that a record cannot be its own parent.
+If the active column is not set on the form then will look for a method on
+the Class::DBI class also called "active_column".  This allows using a method
+in your Class::DBI base class to define your active column name:
+
+    sub active_column { return 'is_active' }
+
+Finally, if that method is not found then will call the method on the field.
+This allows overriding the active column name for a specific field.  The
+default method returns the column name "active".
+
+In addition, if the foreign class is the same as the item's class (or the class
+returned by object_class) then options pointing to item are excluded.  The
+reason for this is for a table column that points to the same table (self
+referenced), such as a "parent" column.  The assumption is that a record cannot
+be its own parent.
 
 =cut
 
@@ -243,14 +256,18 @@ sub lookup_options {
     return unless $f_class->find_column($label_column);
 
 
+
     my $active_col = $self->can( 'active_column' )
         ? $self->active_column
-        : $field->active_column;
+        : $f_class->can( 'active_column' )
+            ? $f_class->active_column
+            : $field->active_column;
 
     $active_col = '' unless $f_class->find_column( $active_col );
 
     my $sort_col = $field->sort_order;
-    $sort_col = defined $sort_col && $f_class->find_column( $sort_col ) 
+
+    $sort_col = defined $sort_col && $f_class->find_column( $sort_col )
         ? $sort_col
         : $label_column;
 

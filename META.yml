@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Form-Processor-Model-CDBI
-version:             0.08
+version:             0.09
 abstract:            model class for Form::Processor based on Class::DBI
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.36
