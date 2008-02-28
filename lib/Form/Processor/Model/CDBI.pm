@@ -5,7 +5,7 @@ use Carp;
 use Data::Dumper;
 use base 'Form::Processor';
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 
@@ -103,7 +103,9 @@ in your form class (or form base class) if your ids do not match that pattern.
 sub init_item {
     my $self = shift;
     #my $item_id = $self->item_id or return 0;
-    my $item_id = $self->item_id or return;
+    my $item_id = $self->item_id;
+
+    return unless defined $item_id;
 
     #return 0 unless $item_id =~ /^\d+$/;
     return unless $item_id =~ /^\d+$/;
@@ -198,11 +200,11 @@ Returns a array reference of key/value pairs for the column passed in.
 Calls $field->label_column to get the column name to use as the label.
 The default is "name".  The labels are sorted by Perl's cmp sort.
 
-If there is an "active" column then only active are included, with the exception
-being if the form (item) has currently selected the inactive item.  This allows
-existing records that reference inactive items to still have those as valid select
-options.  The inactive labels are formatted with brackets to indicate in the select
-list that they are inactive.
+If there is an "active" column then only active are included, with the
+exception being if the form (item) has currently selected the inactive item.
+This allows existing records that reference inactive items to still have those
+as valid select options.  The inactive labels are formatted with parenthesis
+to indicate in the select list that they are inactive.
 
 The active column name is determined by calling:
 
@@ -211,7 +213,7 @@ The active column name is determined by calling:
         : $field->active_column;
 
 Which allows setting the name of the active column globally if
-your tables are consistantly named (all lookup tables have the same
+your tables are consistently named (all lookup tables have the same
 column name to indicate they are active), or on a per-field basis.
 
 In addition, if the foreign class is the same as the item's class (or the class returned
@@ -290,7 +292,7 @@ sub lookup_options {
     return [
         map {
             my $label = $_->$label_column;
-            $_->id, $active_col && !$_->$active_col ? "[ $label ]" : "$label"
+            $_->id, $active_col && !$_->$active_col ? "( $label )" : "$label"
         } @rows
     ];
 

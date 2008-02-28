@@ -1,5 +1,14 @@
 Revision history for Perl extension Form::Processor::Model::CDBI.
 
+0.08 Thu Feb 28 02:07:40 UTC 2008
+    Allow primary keys (ids) of zero.  Not sure I like this
+    change as zero primary keys are perfectly valid but tend
+    to be a bad idea.
+
+    Change from brackets to parenthesis to indicate
+    options that are not "active" in select lists.
+    This conflicted with Locale::Maketext.
+
 0.07 Wed Dec 19 05:56:19 UTC 2007
     use_ok() was used incorrectly and Test::More
     upgrade to .74 caused it to fail.
